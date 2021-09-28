@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from jwc.picgen import *
 from model.course import *
+from config import *
 import requests
 import json
 
@@ -22,8 +23,8 @@ class JwcForm(BaseModel):
 @app.post("/jwc/course/pic")
 def get_course_pic(form: JwcForm):
     res = requests.post(
-        "http://localhost:5901/api/jwc/json?username={}&password={}".format(
-            form.username, form.password
+        "{}/api/jwc/json?username={}&password={}".format(
+            URL_JWC, form.username, form.password
         )
     )
     if not res.ok:
@@ -31,6 +32,8 @@ def get_course_pic(form: JwcForm):
     resJson = json.loads(res.text)
     if not resJson["ok"]:
         return BadRes("账号或密码错误")
+    if resJson["data"] == None:
+        return BadRes("没有课程信息")
     courses = ReadCourses(resJson["data"])
     draw_all(courses, "code", 3)
     return GoodRes("ok", None)
