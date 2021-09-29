@@ -1,14 +1,15 @@
-from fastapi.param_functions import File
+from fastapi import responses
 from model.apires import BadRes, GoodRes
-from fastapi import FastAPI
+from fastapi import FastAPI,HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from jwc.picgen import *
 from model.course import *
 from config import *
+from jwc.config import *
 import requests
 import json
-
+from tool import create_randstr, cache
 
 app = FastAPI()
 
@@ -38,9 +39,18 @@ def get_course_pic(form: JwcForm):
     if resJson["data"] == None:
         return BadRes("没有课程信息")
     courses = ReadCourses(resJson["data"])
-    draw_all(courses, "code", 3)
-    return GoodRes("ok", None)
+    draw_all(courses, form.username, 3)
 
-@app.post("/jwc/course/pic/file")
-async def create_file():
-    return FileResponse('./code.jpg',filename='test.jpg')
+    token = create_randstr(32)
+    cache.add(token,form.username)
+    return GoodRes("ok", "/jwc/course/pic/{}".format(token))
+
+
+@app.post("/jwc/course/pic/{token}")
+async def create_file(token: str):
+    value = cache.get(token)
+    if value == None:
+        raise HTTPException(status_code=406,detail="wrong token")
+    return FileResponse(
+        "{}{}.jpg".format(COURSE_PIC_SAVE_PATH, value), filename="course.jpg"
+    )

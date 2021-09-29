@@ -129,4 +129,4 @@ def draw_all(courses: List[Course], filename: str, week_order: int):
             ),
             course,
         )
-    image.save("{}{}.jpg".format(COURSE_PIC_SAVE_PATH,filename), "jpeg")
+    image.save("{}{}.jpg".format(COURSE_PIC_SAVE_PATH, filename), "jpeg")
