@@ -29,3 +29,4 @@ DATE_BASE = (53, 28)
 DAY_BASE = datetime.datetime.strptime("2021-09-05", "%Y-%m-%d")
 WEEK_SPAN = datetime.timedelta(days=7)
 DAY_SPAN = datetime.timedelta(days=1)
+COURSE_PIC_SAVE_PATH = "./src/jpg/"

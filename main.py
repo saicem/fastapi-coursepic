@@ -1,11 +1,14 @@
+from fastapi.param_functions import File
 from model.apires import BadRes, GoodRes
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from jwc.picgen import *
 from model.course import *
 from config import *
 import requests
 import json
+
 
 app = FastAPI()
 
@@ -37,3 +40,7 @@ def get_course_pic(form: JwcForm):
     courses = ReadCourses(resJson["data"])
     draw_all(courses, "code", 3)
     return GoodRes("ok", None)
+
+@app.post("/jwc/course/pic/file")
+async def create_file():
+    return FileResponse('./code.jpg',filename='test.jpg')
