@@ -38,13 +38,15 @@ def text_format(s: str, n: int):
 # 获取颜色:
 def get_color(i: int):
     color_ls = [
-        (2, 195, 154),
-        (231, 29, 54),
-        (168, 218, 220),
-        (69, 123, 157),
-        (255, 107, 107),
-        (244, 162, 97),
-        (91, 192, 235),
+        (255, 168, 64, 255),
+        (57, 211, 169, 255),
+        (254, 134, 147, 255),
+        (111, 137, 226, 255),
+        # (239, 130, 109, 255),
+        (99, 186, 255, 255),
+        (254, 212, 64, 255),
+        (184, 150, 230, 255),
+        (169, 213, 59, 255),
     ]
     return color_ls[i]
 
@@ -116,7 +118,7 @@ def draw_all(courses: List[Course], filename: str, week_order: int):
     # 2340 20 + 170 * 13 + 20
     height = MARGIN_TOP + COURSEBOX_HEIGHT * 13 + MARGIN_BUTTOM
 
-    image = Image.new("RGB", (width, height), (255, 255, 255))
+    image = Image.new("RGBA", (width, height), (255, 255, 255))
     draw = ImageDraw.Draw(image)
     draw_topbar(draw, week_order)
     for course in courses:
@@ -129,4 +131,4 @@ def draw_all(courses: List[Course], filename: str, week_order: int):
             ),
             course,
         )
-    image.save("{}{}.jpg".format(COURSE_PIC_SAVE_PATH, filename), "jpeg")
+    image.save("{}{}.jpg".format(COURSE_PIC_SAVE_PATH, filename), "png")
