@@ -47,10 +47,13 @@ def name_format(text: str, n: int) -> str:
 
 
 def place_format(text: str) -> str:
-    if len(text) == 10:
-        return text.replace("(", "\n").replace(")", "")
-    # 防止有些课程的教室信息不能被格式化
-    return textwrap.fill(text, width=4)
+    # if len(text) == 10:
+    #     return text.replace("(", "\n").replace(")", "")
+    # # 防止有些课程的教室信息不能被格式化
+    # return textwrap.fill(text, width=4)
+    # todo 覆盖所有课程类型
+    return text.replace("(", "\n").replace(")", "")
+
 
 
 # 获取颜色:
