@@ -10,7 +10,9 @@ from jwc.util import *
 
 def draw_topbar(draw: ImageDraw.ImageDraw, week_order: int):
     font = ImageFont.truetype(FONT_TYPE, TOPBAR_FONT_SIZE)
-    draw.text(WEEKORDER_ANCHOR, get_weekorder_name(week_order), font=font, fill=(12, 12, 12))
+    draw.text(
+        WEEKORDER_ANCHOR, get_weekorder_name(week_order), font=font, fill=(12, 12, 12)
+    )
 
 
 def draw_weekbar(draw: ImageDraw.ImageDraw, week_order: int):
