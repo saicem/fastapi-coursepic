@@ -1,6 +1,7 @@
 # 图片生成
 
 
+from typing import List, Tuple
 from model.course import Course
 from PIL import Image, ImageDraw, ImageFont
 from lib.config import *
@@ -48,7 +49,7 @@ class CourseDrawer:
     # 获取要绘制的课表格子的坐标
     def get_course_coordinate(
         self, dayOfWeek: int, startSection: int, endSection: int
-    ) -> tuple[int, int, int, int]:
+    ) -> Tuple[int, int, int, int]:
         # 周日为 0 所以做 (dayOfWeek + 6) // 7 处理
         x0 = MARGIN_LEFT + COURSE_WIDTH * ((dayOfWeek + 6) % 7)
         y0 = COURSE_Y + COURSE_HEIGHT * (startSection - 1)
@@ -62,7 +63,7 @@ class CourseDrawer:
         return (x0, y0, x1, y1)
 
     # 绘制某个课表格子 起始点 (x,y) 结束点 (x,y)
-    def draw_course(self, xy: tuple[int, int, int, int], course: Course):
+    def draw_course(self, xy: Tuple[int, int, int, int], course: Course):
         font = ImageFont.truetype(FONT_TYPE, FONT_SIZE)
         self.__draw.rounded_rectangle(
             xy=xy,
@@ -87,7 +88,7 @@ class CourseDrawer:
         #     font=font,
         # )
 
-    def draw_courses(self, courses: list[Course], week_order: int):
+    def draw_courses(self, courses: List[Course], week_order: int):
         for course in courses:
             if course.week_start > week_order or course.week_end < week_order:
                 continue
@@ -123,7 +124,7 @@ class CourseDrawer:
             font=font,
         )
 
-    def draw_all(self, courses: list[Course], filename: str, week_order: int):
+    def draw_all(self, courses: List[Course], filename: str, week_order: int):
         if week_order <= 0 or week_order > 20:
             raise Exception(
                 "week_order 应大于0小于等于20 而给予的 week_order = {}".format(week_order)
