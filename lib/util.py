@@ -1,5 +1,5 @@
 from pydantic.tools import T
-from jwc.config import *
+from lib.config import *
 import textwrap
 
 
@@ -46,15 +46,6 @@ def get_date(week: int, dow_order: int):
 
 def name_format(text: str, n: int) -> str:
     return textwrap.fill(text, width=n)
-
-
-def place_format(text: str) -> str:
-    # if len(text) == 10:
-    #     return text.replace("(", "\n").replace(")", "")
-    # # 防止有些课程的教室信息不能被格式化
-    # return textwrap.fill(text, width=4)
-    # todo 覆盖所有课程类型
-    return text.replace("(", "\n").replace(")", "")
 
 
 # 获取颜色:

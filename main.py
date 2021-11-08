@@ -3,7 +3,7 @@ from model.apires import BadRes, GoodRes
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
-from jwc.picgen import *
+from lib.picgen import *
 from model.course import *
 from config import *
 import requests
@@ -40,7 +40,7 @@ def get_course_pic(form: CoursePicForm):
     if resJson["data"] == None:
         return BadRes("没有课程信息")
     courses = ReadCourses(resJson["data"])
-    draw_all(courses, form.username, form.week_order)
+    CourseDrawer().draw_all(courses, form.username, form.week_order)
 
     token = create_randstr(32)
     fileName = "{}_{}".format(form.username, str(form.week_order))
