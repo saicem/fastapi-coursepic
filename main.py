@@ -27,6 +27,8 @@ class CoursePicForm(BaseModel):
 
 @app.post("/jwc/course/pic")
 def get_course_pic(form: CoursePicForm):
+    if form.week_order <= 0 or form.week_order > 20:
+        return BadRes("week_order 应在 1~20")
     res = requests.post(
         "{}/api/jwc/json?username={}&password={}&weekOrder={}".format(
             URL_JWC, form.username, form.password, form.week_order

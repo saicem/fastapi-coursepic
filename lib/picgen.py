@@ -63,30 +63,25 @@ class CourseDrawer:
         return (x0, y0, x1, y1)
 
     # 绘制某个课表格子 起始点 (x,y) 结束点 (x,y)
-    def draw_course(self, xy: Tuple[int, int, int, int], course: Course):
+    def draw_course(self, course_box_xy: Tuple[int, int, int, int], course: Course):
         font = ImageFont.truetype(FONT_TYPE, FONT_SIZE)
         self.__draw.rounded_rectangle(
-            xy=xy,
+            xy=course_box_xy,
             radius=COURSE_RADIUS,
             outline=(255, 255, 255),
             fill=get_color(course.day_of_week),
             width=2,
         )
-        self.__draw.text(
-            (xy[0] + COURSE_NAME_ANCHOR[0], xy[1] + COURSE_NAME_ANCHOR[1]),
-            name_format(course.name, 4),
-            font=font,
+        self.draw_text_course_name(
+            course.name,
+            font,
+            (course_box_xy[0] + COURSE_NAME_ANCHOR[0], course_box_xy[1] + COURSE_NAME_ANCHOR[1]),
         )
-        self.draw_text_place(
+        self.draw_text_course_place(
             course.room,
             font,
-            (xy[0] + COURSE_ROOM_ANCHOR[0], xy[3] + COURSE_ROOM_ANCHOR[1]),
+            (course_box_xy[0] + COURSE_ROOM_ANCHOR[0], course_box_xy[3] + COURSE_ROOM_ANCHOR[1]),
         )
-        # self.__draw.text(
-        #     (xy[0] + COURSE_ROOM_ANCHOR[0], xy[3] + COURSE_ROOM_ANCHOR[1]),
-        #     self.place_format(course.room, font),
-        #     font=font,
-        # )
 
     def draw_courses(self, courses: List[Course], week_order: int):
         for course in courses:
@@ -99,23 +94,24 @@ class CourseDrawer:
                 course,
             )
 
-    # 教师地点信息格式化
-    def draw_text_place(self, text: str, font: ImageFont.FreeTypeFont, anchor) -> None:
-        max_len = 125
-        draw_text_list = []
-        length = len(text)
-        start: int = 0
-        end: int = (8, length)[length > 5]
-        while start < length:
-            tmp_len = font.getlength(text[start:end])
-            if tmp_len > max_len:
-                end -= 1
-            else:
-                draw_text_list.append(text[start:end])
-                start = end
-                end = (end + 8, length)[length > end + 8]
-        draw_text = "\n".join(draw_text_list)
-        # https://www.osgeo.cn/pillow/reference/ImageFont.html
+    # 渲染课程名称
+    def draw_text_course_name(
+        self, text: str, font: ImageFont.FreeTypeFont, anchor
+    ) -> None:
+        draw_text = self.format_text(text, COURSE_TEXT_MAXLEN, font)
+        self.__draw.text(
+            (anchor[0], anchor[1]),
+            draw_text,
+            font=font,
+        )
+
+    # https://www.osgeo.cn/pillow/reference/ImageFont.html
+    # 上课地点信息格式化
+    def draw_text_course_place(
+        self, text: str, font: ImageFont.FreeTypeFont, anchor
+    ) -> None:
+        draw_text = self.format_text(text, COURSE_TEXT_MAXLEN, font)
+        # 对于固定的信息可以特别的处理
         # text.replace("(", "\n").replace(")", "")
         _, compensate_height = font.getsize_multiline(draw_text)
         self.__draw.text(
@@ -123,6 +119,23 @@ class CourseDrawer:
             draw_text,
             font=font,
         )
+
+    def format_text(
+        self, text: str, text_max_length: str, font: ImageFont.FreeTypeFont
+    ):
+        draw_text_list = []
+        length = len(text)
+        start: int = 0
+        end: int = (8, length)[length > 5]
+        while start < length:
+            tmp_len = font.getlength(text[start:end])
+            if tmp_len > text_max_length:
+                end -= 1
+            else:
+                draw_text_list.append(text[start:end])
+                start = end
+                end = (end + 8, length)[length > end + 8]
+        return "\n".join(draw_text_list)
 
     def draw_all(self, courses: List[Course], filename: str, week_order: int):
         if week_order <= 0 or week_order > 20:
