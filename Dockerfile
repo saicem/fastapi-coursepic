@@ -12,6 +12,7 @@ RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && 
 
 COPY . .
 
-RUN mv ./src/fonts/HarmonyOS_Sans_SC_Regular.ttf /usr/share/fonts/HarmonyOS_Sans_SC_Regular.ttf
+RUN mv ./src/fonts/HarmonyOS_Sans_SC_Regular.ttf /usr/share/fonts/HarmonyOS_Sans_SC_Regular.ttf && \
+    mkdir ./cache/course_table
 
 CMD [ "uvicorn" ,"main:app","--host", "0.0.0.0"]

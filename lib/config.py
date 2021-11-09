@@ -41,4 +41,4 @@ BASE_WIDTH = MARGIN_LEFT + MARGIN_RIGHT + COURSE_WIDTH * 7
 DAY_ANCHOR = datetime.datetime.strptime("2021-09-05", "%Y-%m-%d")
 WEEK_SPAN = datetime.timedelta(days=7)
 DAY_SPAN = datetime.timedelta(days=1)
-COURSE_PIC_SAVE_PATH = "./src/jpg/"
+COURSE_PIC_SAVE_PATH = "./cache/course_table/"

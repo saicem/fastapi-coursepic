@@ -75,12 +75,18 @@ class CourseDrawer:
         self.draw_text_course_name(
             course.name,
             font,
-            (course_box_xy[0] + COURSE_NAME_ANCHOR[0], course_box_xy[1] + COURSE_NAME_ANCHOR[1]),
+            (
+                course_box_xy[0] + COURSE_NAME_ANCHOR[0],
+                course_box_xy[1] + COURSE_NAME_ANCHOR[1],
+            ),
         )
         self.draw_text_course_place(
             course.room,
             font,
-            (course_box_xy[0] + COURSE_ROOM_ANCHOR[0], course_box_xy[3] + COURSE_ROOM_ANCHOR[1]),
+            (
+                course_box_xy[0] + COURSE_ROOM_ANCHOR[0],
+                course_box_xy[3] + COURSE_ROOM_ANCHOR[1],
+            ),
         )
 
     def draw_courses(self, courses: List[Course], week_order: int):
@@ -121,20 +127,25 @@ class CourseDrawer:
         )
 
     def format_text(
-        self, text: str, text_max_length: str, font: ImageFont.FreeTypeFont
-    ):
-        draw_text_list = []
+        self, text: str, text_max_length: int, font: ImageFont.FreeTypeFont
+    ) -> str:
         length = len(text)
+        if len(text) <= 1:
+            return text
+        draw_text_list = []
         start: int = 0
-        end: int = (8, length)[length > 5]
-        while start < length:
-            tmp_len = font.getlength(text[start:end])
-            if tmp_len > text_max_length:
-                end -= 1
-            else:
+        end: int = 1
+        while 1:
+            if end == length:
+                draw_text_list.append(text[start:end])
+                break
+            if font.getlength(text[start : end + 1]) > text_max_length:
                 draw_text_list.append(text[start:end])
                 start = end
-                end = (end + 8, length)[length > end + 8]
+                end = end + 1
+            else:
+                end += 1
+
         return "\n".join(draw_text_list)
 
     def draw_all(self, courses: List[Course], filename: str, week_order: int):
