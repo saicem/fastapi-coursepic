@@ -2,7 +2,7 @@
 
 
 from typing import List, Tuple
-from model.course import Course
+from model.model import Course
 from PIL import Image, ImageDraw, ImageFont
 from lib.config import *
 from lib.util import *
@@ -11,21 +11,25 @@ from lib.util import *
 class CourseDrawer:
     __image: Image
     __draw: ImageDraw.ImageDraw
+    __weekorder: int
+    __courses: List[Course]
 
-    def __init__(self) -> None:
+    def __init__(self, courses: List[Course], weekorder: int) -> None:
         self.__image = Image.new("RGBA", (BASE_WIDTH, BASE_HEIGHT), (255, 255, 255))
         self.__draw = ImageDraw.Draw(self.__image)
+        self.__weekorder = weekorder
+        self.__courses = courses
 
-    def draw_topbar(self, week_order: int):
+    def draw_topbar(self):
         font = ImageFont.truetype(FONT_TYPE, TOPBAR_FONT_SIZE)
         self.__draw.text(
             WEEKORDER_ANCHOR,
-            get_weekorder_name(week_order),
+            get_weekorder_name(self.__weekorder),
             font=font,
             fill=(12, 12, 12),
         )
 
-    def draw_weekbar(self, week_order: int):
+    def draw_weekbar(self):
         font = ImageFont.truetype(FONT_TYPE, WEEKBAR_FONT_SIZE)
         dow = 1
         x0 = MARGIN_LEFT
@@ -39,7 +43,7 @@ class CourseDrawer:
             )
             self.__draw.text(
                 (x0 + DATE_ANCHOR[0], y0 + DATE_ANCHOR[1]),
-                get_date(week_order, dow_order),
+                get_date(self.__weekorder, dow_order),
                 font=font,
                 fill=(0, 0, 0),
             )
@@ -69,11 +73,11 @@ class CourseDrawer:
             xy=course_box_xy,
             radius=COURSE_RADIUS,
             outline=(255, 255, 255),
-            fill=get_color(course.day_of_week),
+            fill=get_color(course.DayOfWeek),
             width=2,
         )
         self.draw_text_course_name(
-            course.name,
+            course.Name,
             font,
             (
                 course_box_xy[0] + COURSE_NAME_ANCHOR[0],
@@ -81,7 +85,7 @@ class CourseDrawer:
             ),
         )
         self.draw_text_course_place(
-            course.room,
+            course.Room,
             font,
             (
                 course_box_xy[0] + COURSE_ROOM_ANCHOR[0],
@@ -89,13 +93,13 @@ class CourseDrawer:
             ),
         )
 
-    def draw_courses(self, courses: List[Course], week_order: int):
-        for course in courses:
-            if course.week_start > week_order or course.week_end < week_order:
+    def draw_courses(self):
+        for course in self.__courses:
+            if course.WeekStart > self.__weekorder or course.WeekEnd < self.__weekorder:
                 continue
             self.draw_course(
                 self.get_course_coordinate(
-                    course.day_of_week, course.section_start, course.section_end
+                    course.DayOfWeek, course.WeekStart, course.WeekEnd
                 ),
                 course,
             )
@@ -116,46 +120,33 @@ class CourseDrawer:
     def draw_text_course_place(
         self, text: str, font: ImageFont.FreeTypeFont, anchor
     ) -> None:
-        draw_text = self.format_text(text, COURSE_TEXT_MAXLEN, font)
-        # 对于固定的信息可以特别的处理
-        # text.replace("(", "\n").replace(")", "")
-        _, compensate_height = font.getsize_multiline(draw_text)
+        text = self.format_text(text, COURSE_TEXT_MAXLEN, font)
+        _, compensate_height = font.getsize_multiline(text)
         self.__draw.text(
             (anchor[0], anchor[1] - compensate_height),
-            draw_text,
+            text,
             font=font,
         )
 
-    def format_text(
-        self, text: str, text_max_length: int, font: ImageFont.FreeTypeFont
-    ) -> str:
+    def format_text(self, text: str, maxlen: int, font: ImageFont.FreeTypeFont) -> str:
         length = len(text)
         if len(text) <= 1:
             return text
-        draw_text_list = []
-        start: int = 0
-        end: int = 1
+        texts = []
+        left: int = 0
+        right: int = 1
         while 1:
-            if end == length:
-                draw_text_list.append(text[start:end])
+            if right == length:
+                texts.append(text[left:right])
                 break
-            if font.getlength(text[start : end + 1]) > text_max_length:
-                draw_text_list.append(text[start:end])
-                start = end
-                end = end + 1
-            else:
-                end += 1
+            if font.getlength(text[left : right + 1]) > maxlen:
+                texts.append(text[left:right])
+                left = right
+            right += 1
+        return "\n".join(texts)
 
-        return "\n".join(draw_text_list)
-
-    def draw_all(self, courses: List[Course], filename: str, week_order: int):
-        if week_order <= 0 or week_order > 20:
-            raise Exception(
-                "week_order 应大于0小于等于20 而给予的 week_order = {}".format(week_order)
-            )
-        self.draw_topbar(week_order)
-        self.draw_weekbar(week_order)
-        self.draw_courses(courses, week_order)
-        self.__image.save(
-            "{}{}_{}.jpg".format(COURSE_PIC_SAVE_PATH, filename, str(week_order)), "png"
-        )
+    def draw(self, filename: str):
+        self.draw_topbar()
+        self.draw_weekbar()
+        self.draw_courses()
+        self.__image.save(f"{COURSE_PIC_SAVE_PATH}{filename}.jpg", "png")
