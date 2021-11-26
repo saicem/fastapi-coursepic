@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+service CoursePicMaker {
+    rpc Ping (PingRequest) returns (PongReply) {}
+    rpc MakeCoursePic(CoursePicRequest) returns (CoursePicReply) {}
+}
+
+message PingRequest {
+}
+
+message PongReply {
+    string message = 1;
+}
+
+message CoursePicRequest {
+    // week 为 0 时 生成所有周的图片
+    int64 week = 1;
+    repeated Course Courses = 2;
+}
+
+message CoursePicReply {
+    bool ok = 1;
+    string url = 2;
+}
+
+
+message Course {
+    reserved 8 to 9;
+    string Name = 1;
+    string Room = 2;
+    string WeekStart = 3;
+    string WeekEnd = 4;
+    string SectionStart = 5;
+    string SectionEnd = 6;
+    string DayOfWeek = 7;
+    // string Teacher = 8;
+    // string Credit = 9;
+}

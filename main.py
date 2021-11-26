@@ -1,4 +1,7 @@
+import logging
 import uvicorn
+
+from server.rpc import RunRpc
 
 
 def RunApi():
@@ -13,4 +16,6 @@ def RunApi():
 
 
 if __name__ == "__main__":
+    logging.basicConfig()
     RunApi()
+    # RunRpc()
